@@ -104,8 +104,6 @@ static ssize_t proc_driver_write(struct file *file,
                         	break;
                     	case PINPGM:
                         	break;
-                    	case VG_28V_OUT_DET:
-                        	break;
                    	case WT_28V_IN:
                        		break;
                    	case SW_SOV:
@@ -121,8 +119,6 @@ static ssize_t proc_driver_write(struct file *file,
                 	case DRAIN_LOCAL_28V_IN:
                 		break;
                 	case DRAIN_CMD_GND_IN:
-                		break;
-                	case VG_GND_OUT_DET:
                 		break;
 			case WT_GND_IN:
 				break;
@@ -142,19 +138,19 @@ static ssize_t proc_driver_write(struct file *file,
                     	case LED6:
                         	SET_SLICE_32(output_data, packet.data, 3, 0x1);
 				break;
-                    	case EN_485:
+                   	case VG_28V_OUT:
                         	SET_SLICE_32(output_data, packet.data, 4, 0x1);
                         	break;
                    	case VG_GND_OUT:
                         	SET_SLICE_32(output_data, packet.data, 5, 0x1);
                         	break;
-                   	case VG_28V_OUT:
+                    	case FLV_ALT_DRV_CL:
                         	SET_SLICE_32(output_data, packet.data, 6, 0x1);
                         	break;
-                    	case FLV_NRESET:
+                    	case FLV_ALT_DRV_OP:
                         	SET_SLICE_32(output_data, packet.data, 7, 0x1);
-				break;
-                    	case FLV_I4:
+                        	break;
+                    	case FLV_NRESET:
                         	SET_SLICE_32(output_data, packet.data, 8, 0x1);
 				break;
                     	case FLV_DECAY:
@@ -217,15 +213,13 @@ static ssize_t proc_driver_write(struct file *file,
                     	case LVL_FAIL_GND_OUT:
                         	SET_SLICE_32(output_data, packet.data, 28, 0x1);
                         	break;
-                    	case FLV_ALT_DRV_CL:
+                    	case EN_485:
                         	SET_SLICE_32(output_data, packet.data, 29, 0x1);
                         	break;
-                    	case FLV_ALT_DRV_OP:
+                    	case FLV_I:
                         	SET_SLICE_32(output_data, packet.data, 30, 0x1);
                         	break;
-                    	case FLV_I0_I3:
-                        	SET_SLICE_32(output_data, packet.data, 31, 0x1);
-                        	break;
+
                     	default:;
                 }
                 outport(output_data, 2);
@@ -269,11 +263,8 @@ static ssize_t proc_driver_read(struct file *file,
                 case PINPGM:
                 	packet.data = GET_SLICE_32(input_data, 4, 0xFF);
                 	break;
-                case VG_GND_OUT_DET:
-                	packet.data = GET_SLICE_32(input_data, 12, 1);
-                	break;
-                case VG_28V_OUT_DET:
-                	packet.data = GET_SLICE_32(input_data, 13, 1);
+                case SW_ID:
+                	packet.data = GET_SLICE_32(input_data, 12, 0x3);
                 	break;
                 case FLV_IND_OP:
                 	packet.data = GET_SLICE_32(input_data, 14, 1);
@@ -305,9 +296,6 @@ static ssize_t proc_driver_read(struct file *file,
                	case FLV_ALT_IND_OP:
 			packet.data = GET_SLICE_32(input_data, 24, 1);
                        	break;
-                case SW_ID:
-                	packet.data = GET_SLICE_32(input_data, 25, 0x3);
-                	break;
             	default:;
         }
         read_size = buffer_size - copy_to_user(buffer, (void *) &packet, sizeof(IOPacket));
@@ -383,7 +371,6 @@ static const struct file_operations proc_driver_operations =
 */
 static void driver_shutdown(struct platform_device *pdev)
 {
-	/*iowrite32(0, base_addr + 2);*/
 	output_data = 0;
     	outport(output_data, 2);
 }
